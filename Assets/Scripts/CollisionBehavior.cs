@@ -7,9 +7,11 @@ public class CollisionBehavior : MonoBehaviour {
 	float lastVelocityY;
 	// Use this for initialization
 	AudioSource Whaw;
+	AudioSource Crash;
 	bool isGrounded;
 	void Start () {
 		Whaw = GetComponents<AudioSource>()[1];
+		Crash = GetComponents<AudioSource>()[2];
 	}
 	
 	// Update is called once per frame
@@ -31,12 +33,11 @@ public class CollisionBehavior : MonoBehaviour {
 			if(lastVelocityY>1){
 			//Debug.Log("I'm Crash!:(");
 				GM.ParachuterCrash();
+				Crash.Play();
 				Destroy(gameObject,1);
 				 
 			}
 			else{
-				GM.AnotherParachuterLanded();
-				Whaw.Play();
 				StartCoroutine(Landing());
 				Destroy(gameObject,10);
 				//Debug.Log("I'm Fine :)");
@@ -47,6 +48,8 @@ public class CollisionBehavior : MonoBehaviour {
 
 	IEnumerator Landing()
 	{
+		GM.AnotherParachuterLanded();
+		Whaw.Play();
 		yield return new WaitForSeconds(2);
 		isGrounded = true;
 	}

@@ -13,4 +13,8 @@ public class GM {
 	{
 		CrachedParachuters++;
 	}
+	public static void Reset()
+	{
+		LandedParachuters=CrachedParachuters=0;
+	}
 }
