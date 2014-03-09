@@ -4,50 +4,63 @@ using System;
 using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour {
 
-	public GameObject parachuter;
+	public GameObject Parachuter;
+	public GameObject Ground;
 	bool GameOver = false;
 	float maxDelay = 5;
 	float minDelay = 3;
 	float randomRange;
-	DateTime nextTime;
+	float nextTime;
 	float nextDecrementRate = 7; 
-	DateTime nextDecrement;
-	int last;
+	float nextDecrement;
+	int best;
 	string debugInfo;
 	void Start()
 	{
-		last = PlayerPrefs.GetInt("last");
-		nextDecrement = DateTime.Now.AddSeconds(nextDecrementRate);
-		randomRange = Random.Range(minDelay,maxDelay);
+		Game.Unpause();
+		best = PlayerPrefs.GetInt("last");
+		float height = (float)(Camera.main.orthographicSize * 4.0f);
+		float width = (float)(height * Screen.width / Screen.height);
+		Ground.transform.localScale = new Vector2(width, 1f);
+		nextDecrement = Time.time+nextDecrementRate;
+		randomRange = Random.Range(2,3);
+		nextTime = randomRange+Time.time;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if(GM.CrachedParachuters>=1){
-			GameOver=true;
-			PlayerPrefs.SetInt("last",GM.LandedParachuters);
-		}
-		if(!GameOver){
-			debugInfo = "Next instatiation "+nextTime.Second+" "+DateTime.Now.Second;
-			if(nextTime<DateTime.Now){
-				debugInfo = "Into instatiation block";
-				parachuter.transform.position  =  new Vector2(Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0f,0f)).x,Camera.main.ScreenToWorldPoint(new Vector2(Screen.width,0f)).x),Camera.main.ScreenToWorldPoint(new Vector2(0f,Screen.height)).y);
-				Instantiate(parachuter);
-				nextTime = DateTime.Now.AddSeconds(randomRange);
+		if(!Game.IsPaused){
+			if(Game.CrachedParachuters>=1){
+				GameOver=true;
+				if(Game.LandedParachuters>best)
+				PlayerPrefs.SetInt("last",Game.LandedParachuters);
 			}
-			if(DateTime.Now>nextDecrement){
-				nextDecrement = DateTime.Now.AddSeconds(-nextDecrementRate);
-				DecrementRange();
+			if(!GameOver){
+				debugInfo = "Next instatiation "+nextTime+" "+Time.time;
+				if(nextTime<Time.time){
+					debugInfo = "Into instatiation block";
+					Parachuter.transform.position  =  new Vector2(Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0f,0f)).x,Camera.main.ScreenToWorldPoint(new Vector2(Screen.width,0f)).x),Camera.main.ScreenToWorldPoint(new Vector2(0f,Screen.height)).y);
+					Instantiate(Parachuter);
+					nextTime = Time.time+randomRange;
+				}
+				if(Time.time>nextDecrement){
+					nextDecrement = Time.time+nextDecrementRate;
+					DecrementRange();
+				}
 			}
 		}
 	}
 
 	void OnGUI(){
-		GUI.Label(new Rect(0,0,Screen.width,Screen.height),string.Format("parachuters landed: {0}\nparachuters crached: {1}\nlast:{2}\nDebug info:{3}",GM.LandedParachuters,GM.CrachedParachuters,last,debugInfo));
+		GUI.Label(new Rect(0,0,Screen.width,Screen.height),string.Format("parachuters landed: {0}\nparachuters crached: {1}\nBest:{2}\nDebug info:{3}",Game.LandedParachuters,Game.CrachedParachuters,best,debugInfo));
 		if(GameOver){
 			//Draw gameover gui
 			GUI.Window(0,new Rect(Screen.width/2-100,Screen.height/2-100,200,200),GameOverWindowFunc,"GameOver");
 		}
+			if(GUI.Button(new Rect(Screen.width-40,25,20,20),"||"))
+			{
+				Game.InvertPause();
+			}
 	}
 
 	void GameOverWindowFunc(int windowId)
@@ -59,9 +72,16 @@ public class GameManager : MonoBehaviour {
 			Reload ("MainMenu");
 		}
 	}
+
+	void OnApplicationPause(bool pause)
+	{
+		Debug.Log("Pause");
+		Game.Pause();
+	}
+
 	void Reload(string level)
 	{
-		GM.Reset();
+		Game.Reset();
 		Application.LoadLevel(level);
 	}
 	void DecrementRange()

@@ -16,11 +16,22 @@ public class CollisionBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		lastVelocityY = Math.Abs(gameObject.rigidbody2D.velocity.y);
-		if(isGrounded)
+		if(Game.IsPaused)
 		{
-			var sign = Math.Sign (gameObject.transform.position.x);
-			gameObject.transform.Translate(Time.deltaTime*2*sign,0,0);
+			gameObject.rigidbody2D.isKinematic = true;
+		}
+		else
+		{
+			if(gameObject.rigidbody2D.isKinematic)
+			{
+				gameObject.rigidbody2D.isKinematic = false;
+			}
+			lastVelocityY = Math.Abs(gameObject.rigidbody2D.velocity.y);
+			if(isGrounded)
+			{
+				var sign = Math.Sign (gameObject.transform.position.x);
+				gameObject.transform.Translate(Time.deltaTime*2*sign,0,0);
+			}
 		}
 	}
 
@@ -30,7 +41,7 @@ public class CollisionBehavior : MonoBehaviour {
 		if(collision.gameObject.tag == "Ground"){
 			if(lastVelocityY>1){
 			//Debug.Log("I'm Crash!:(");
-				GM.ParachuterCrash();
+				Game.ParachuterCrash();
 				Crash.Play();
 				Destroy(gameObject,1);
 				 
@@ -46,7 +57,7 @@ public class CollisionBehavior : MonoBehaviour {
 
 	IEnumerator Landing()
 	{
-		GM.ParachuterLanded();
+		Game.ParachuterLanded();
 		Whaw.Play();
 		yield return new WaitForSeconds(2);
 		isGrounded = true;

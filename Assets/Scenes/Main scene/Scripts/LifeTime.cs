@@ -14,7 +14,7 @@ public class LifeTime : MonoBehaviour {
 	void Update () {
 		if(time--<=0){
 			Destroy(gameObject);
-		this.enabled = false;
+				this.enabled = false;
 		}
 	}
 }

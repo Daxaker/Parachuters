@@ -4,6 +4,7 @@ using System.Collections;
 public class TapController : MonoBehaviour {
 
 	// Use this for initialization
+	bool parachuteOpened;
 	void Start () {
 	
 	}
@@ -16,7 +17,7 @@ public class TapController : MonoBehaviour {
 				// Construct a ray from the current touch coordinates
 				Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
 				if (Physics.Raycast(ray, out hit)) {
-					hit.transform.gameObject.rigidbody2D.drag +=Random.Range(10,15);
+					ApplyParachute(hit.transform.gameObject.rigidbody2D);
 				}
 			}
 		}
@@ -26,7 +27,16 @@ public class TapController : MonoBehaviour {
 	{
 		if(Input.GetMouseButtonDown(0))
 		{
-			gameObject.rigidbody2D.drag +=Random.Range(10,15);
+			ApplyParachute(gameObject.rigidbody2D);
+		}
+	}
+
+	void ApplyParachute(Rigidbody2D rigidbody)
+	{
+		if(!parachuteOpened&&!Game.IsPaused)
+		{
+			parachuteOpened = true;
+			rigidbody2D.drag +=Random.Range(10,15);
 		}
 	}
 }
