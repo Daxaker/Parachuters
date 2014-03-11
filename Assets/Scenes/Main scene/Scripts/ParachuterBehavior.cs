@@ -1,17 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-
-public class CollisionBehavior : MonoBehaviour {
+[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(TapController))]
+public class ParachuterBehavior : MonoBehaviour {
 
 	float lastVelocityY;
 	// Use this for initialization
-	AudioSource Whaw;
-	AudioSource Crash;
+	AudioSource WhawSound;
+	AudioSource CrashSound;
 	bool isGrounded;
+	public Sprite deadSprite;
+	public Sprite LandedSprite;
+	SpriteRenderer spriteRenderer;
+	bool dead;
+	TapController tC;
+	byte bitCounter = 0;
 	void Start () {
-		Whaw = GetComponents<AudioSource>()[1];
-		Crash = GetComponents<AudioSource>()[2];
+		WhawSound = GetComponents<AudioSource>()[1];
+		CrashSound = GetComponents<AudioSource>()[2];
+		spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+		tC = GetComponent<TapController>();
 	}
 	
 	// Update is called once per frame
@@ -34,19 +43,21 @@ public class CollisionBehavior : MonoBehaviour {
 			}
 		}
 	}
-
-
+	
 	void OnCollisionEnter2D(Collision2D collision)
 	{
 		if(collision.gameObject.tag == "Ground"){
 			if(lastVelocityY>1){
 			//Debug.Log("I'm Crash!:(");
+				dead =true;
 				Game.ParachuterCrash();
-				Crash.Play();
+				spriteRenderer.sprite = deadSprite;
+				CrashSound.Play();
 				Destroy(gameObject,1);
 				 
 			}
 			else{
+				spriteRenderer.sprite = LandedSprite;
 				StartCoroutine(Landing());
 				Destroy(gameObject,10);
 				//Debug.Log("I'm Fine :)");
@@ -58,7 +69,7 @@ public class CollisionBehavior : MonoBehaviour {
 	IEnumerator Landing()
 	{
 		Game.ParachuterLanded();
-		Whaw.Play();
+		WhawSound.Play();
 		yield return new WaitForSeconds(2);
 		isGrounded = true;
 	}

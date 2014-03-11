@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+[RequireComponent(typeof(SpriteRenderer))]
 public class TapController : MonoBehaviour {
 
 	// Use this for initialization
-	bool parachuteOpened;
+	[HideInInspector]
+	public bool parachuteOpened;
+	public Sprite parachuteOpenSprite;
+	SpriteRenderer spriteRenderer;
 	void Start () {
-	
+		spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -17,6 +20,7 @@ public class TapController : MonoBehaviour {
 				// Construct a ray from the current touch coordinates
 				Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
 				if (Physics.Raycast(ray, out hit)) {
+					if(hit.transform.gameObject.tag == "Player")
 					ApplyParachute(hit.transform.gameObject.rigidbody2D);
 				}
 			}
@@ -37,6 +41,7 @@ public class TapController : MonoBehaviour {
 		{
 			parachuteOpened = true;
 			rigidbody2D.drag +=Random.Range(10,15);
+			spriteRenderer.sprite = parachuteOpenSprite;
 		}
 	}
 }
