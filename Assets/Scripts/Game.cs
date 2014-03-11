@@ -6,9 +6,8 @@ public class Game {
 	static Game()
 	{
 		IsPaused = false;
-		Record = PlayerPrefs.GetInt("last");
 	}
-	public static int Record {get;private set;}
+	public static int Record {get; private set;}
 	public static int LandedParachuters{get;private set;}
 	public static int CrachedParachuters{get;private set;}
 	public static bool IsPaused{get;private set;}
@@ -40,15 +39,18 @@ public class Game {
 	{
 		IsPaused = !IsPaused;
 	}
-	public static void  SetRecord(int newValue)
-	{
-		if(newValue>Record)
-		{
-			PlayerPrefs.SetInt("last",LandedParachuters);
-		}
-	}
+
 	public static void GameOver()
 	{
 		IsGameOver = true;
+		UpdateRecord();
+	}
+	public static void UpdateRecord()
+	{
+		if(LandedParachuters>Record)
+		{
+			PlayerPrefs.SetInt("best",LandedParachuters);
+		}
+		Record = PlayerPrefs.GetInt("best");
 	}
 }

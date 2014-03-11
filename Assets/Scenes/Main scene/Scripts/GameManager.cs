@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
 	void Start()
 	{
 		Game.Unpause();
+		Game.UpdateRecord();
 		float height = (float)(Camera.main.orthographicSize * 4.0f);
 		float width = (float)(height * Screen.width / Screen.height);
 		Ground.transform.localScale = new Vector2(width, 1f);
