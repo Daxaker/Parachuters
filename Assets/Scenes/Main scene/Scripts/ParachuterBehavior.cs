@@ -13,56 +13,55 @@ public class ParachuterBehavior : MonoBehaviour {
 	public Sprite deadSprite;
 	public Sprite LandedSprite;
 	SpriteRenderer spriteRenderer;
-	bool dead;
-	TapController tC;
-	byte bitCounter = 0;
 	void Start () {
 		WhawSound = GetComponents<AudioSource>()[1];
 		CrashSound = GetComponents<AudioSource>()[2];
 		spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-		tC = GetComponent<TapController>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if(Game.IsPaused)
-		{
-			gameObject.rigidbody2D.isKinematic = true;
-		}
-		else
-		{
-			if(gameObject.rigidbody2D.isKinematic)
+		if(Game.IsStarted){
+			if(Game.IsPaused)
 			{
-				gameObject.rigidbody2D.isKinematic = false;
+				gameObject.rigidbody2D.isKinematic = true;
 			}
-			lastVelocityY = Math.Abs(gameObject.rigidbody2D.velocity.y);
-			if(isGrounded)
+			else
 			{
-				var sign = Math.Sign (gameObject.transform.position.x);
-				gameObject.transform.Translate(Time.deltaTime*2*sign,0,0);
+				if(gameObject.rigidbody2D.isKinematic)
+				{
+					gameObject.rigidbody2D.isKinematic = false;
+				}
+				lastVelocityY = Math.Abs(gameObject.rigidbody2D.velocity.y);
+				if(isGrounded)
+				{
+					var sign = Math.Sign (gameObject.transform.position.x);
+					gameObject.transform.Translate(Time.deltaTime*2*sign,0,0);
+				}
 			}
 		}
 	}
 	
 	void OnCollisionEnter2D(Collision2D collision)
 	{
-		if(collision.gameObject.tag == "Ground"){
-			if(lastVelocityY>1){
-			//Debug.Log("I'm Crash!:(");
-				dead =true;
-				Game.ParachuterCrash();
-				spriteRenderer.sprite = deadSprite;
-				CrashSound.Play();
-				Destroy(gameObject,1);
-				 
-			}
-			else{
-				spriteRenderer.sprite = LandedSprite;
-				StartCoroutine(Landing());
-				Destroy(gameObject,10);
-				//Debug.Log("I'm Fine :)");
-			}
+		if(!Game.IsGameOver){
+			if(collision.gameObject.tag == "Ground"){
+				if(lastVelocityY>1){
+				//Debug.Log("I'm Crash!:(");
+					Game.ParachuterCrash();
+					spriteRenderer.sprite = deadSprite;
+					CrashSound.Play();
+					Destroy(gameObject,1);
+					 
+				}
+				else{
+					spriteRenderer.sprite = LandedSprite;
+					StartCoroutine(Landing());
+					Destroy(gameObject,10);
+					//Debug.Log("I'm Fine :)");
+				}
 
+			}
 		}
 	}
 

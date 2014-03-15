@@ -26,10 +26,10 @@ public class GameManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if(!Game.IsPaused){
+		if(!Game.IsPaused&&Game.IsStarted){
 			if(!Game.IsGameOver){
 				if(nextTime<Time.time){
-					Parachuter.transform.position  =  new Vector2(Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0f,0f)).x,Camera.main.ScreenToWorldPoint(new Vector2(Screen.width,0f)).x),Camera.main.ScreenToWorldPoint(new Vector2(0f,Screen.height)).y);
+					Parachuter.transform.position  =  new Vector2(Random.Range(Camera.main.ScreenToWorldPoint(new Vector2(0f+Screen.width*.1f,0f)).x,Camera.main.ScreenToWorldPoint(new Vector2(Screen.width-Screen.width*.1f,0f)).x),Camera.main.ScreenToWorldPoint(new Vector2(0f,Screen.height)).y);
 					Instantiate(Parachuter);
 					nextTime = Time.time+randomRange;
 				}
